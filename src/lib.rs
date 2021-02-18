@@ -34,6 +34,24 @@ struct Field {
     clicks: u32,
 }
 
+macro_rules! end_dialog {
+    ($msg:expr, $color:expr) => {
+        let dialog = MessageDialog::new(
+            None::<&Window>,
+            DialogFlags::empty(),
+            MessageType::Info,
+            ButtonsType::Ok,
+            concat!("<span foreground='", $color, "'>", $msg, "</span>"),
+        );
+        dialog.set_property_use_markup(true);
+        dialog.connect_response(|dialog, _| {
+            dialog.close();
+            std::process::exit(0x0);
+        });
+        dialog.show_all();
+    };
+}
+
 fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
     let mut neighbours = Vec::new();
     let limit: i32 = GRID_SIZE as i32 - 1;
@@ -142,39 +160,14 @@ fn update_ui(field: &RefMut<Field>) {
                 }
                 Cell::Infected => {
                     stack.set_visible_child_name("virus");
-
-                    let dialog = MessageDialog::new(
-                        None::<&Window>,
-                        DialogFlags::empty(),
-                        MessageType::Info,
-                        ButtonsType::Ok,
-                        "<span foreground='darkgreen'>You have been infected!</span>",
-                    );
-                    dialog.set_property_use_markup(true);
-                    dialog.connect_response(|dialog, _| {
-                        dialog.close();
-                        std::process::exit(0x0);
-                    });
-                    dialog.show_all();
+                    end_dialog!("You have been infected!", "darkgreen");
                 }
                 Cell::Hidden(_) => hidden += 1,
             }
         }
     }
     if hidden == VIRUSES {
-        let dialog = MessageDialog::new(
-            None::<&Window>,
-            DialogFlags::empty(),
-            MessageType::Info,
-            ButtonsType::Ok,
-            "<span foreground='darkblue'>You have won!</span>",
-        );
-        dialog.set_property_use_markup(true);
-        dialog.connect_response(|dialog, _| {
-            dialog.close();
-            std::process::exit(0x0);
-        });
-        dialog.show_all();
+        end_dialog!("You have won!", "darkblue");
     }
 }
 
