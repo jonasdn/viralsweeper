@@ -34,31 +34,6 @@ struct Field {
     clicks: u32,
 }
 
-//
-// Place randomly put not on first click coordinate.
-//
-fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: usize) {
-    let mut rng = rand::thread_rng();
-    let mut placed = 0;
-
-    while placed < VIRUSES {
-        let row = rng.gen_range(0..GRID_SIZE);
-        let col = rng.gen_range(0..GRID_SIZE);
-
-        if row == clicked_row && col == clicked_col {
-            continue;
-        }
-
-        match field.cells[(row, col)] {
-            Cell::Hidden(false) => {
-                field.cells[(row, col)] = Cell::Hidden(true);
-                placed += 1;
-            }
-            _ => continue,
-        }
-    }
-}
-
 fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
     let mut neighbours = Vec::new();
     let limit: i32 = GRID_SIZE as i32 - 1;
@@ -72,6 +47,37 @@ fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
     }
     neighbours
 }
+
+//
+// Place randomly put not on first click coordinate.
+//
+fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: usize) {
+    let mut rng = rand::thread_rng();
+    let mut placed = 0;
+    let neighbours = get_neighbours(clicked_row as i32, clicked_col as i32);
+
+    while placed < VIRUSES {
+        let row = rng.gen_range(0..GRID_SIZE);
+        let col = rng.gen_range(0..GRID_SIZE);
+
+        if row == clicked_row && col == clicked_col {
+            continue;
+        }
+
+        if neighbours.iter().any(|&tuple| tuple == (row, col)) {
+            continue;
+        }
+
+        match field.cells[(row, col)] {
+            Cell::Hidden(false) => {
+                field.cells[(row, col)] = Cell::Hidden(true);
+                placed += 1;
+            }
+            _ => continue,
+        }
+    }
+}
+
 //
 // The algorithm is ...
 //  ... if cell has neighbours with virus then ...
@@ -175,7 +181,7 @@ fn update_ui(field: &RefMut<Field>) {
 //
 // We place viruses after first click, since first click should never be on
 // a virus. Each click triggers the algorihm in explode which works on
-// the Array2D in the fields variable. The UI is update from that model. 
+// the Array2D in the fields variable. The UI is update from that model.
 //
 fn click(field_cell: Rc<RefCell<Field>>, row: usize, col: usize) {
     let mut field = field_cell.borrow_mut();
