@@ -52,13 +52,13 @@ macro_rules! end_dialog {
     };
 }
 
-fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
+fn get_neighbours(row: usize, col: usize) -> Vec<(usize, usize)> {
     let mut neighbours = Vec::new();
     let limit: i32 = GRID_SIZE as i32 - 1;
 
-    for y in cmp::max(0, row - 1)..=cmp::min(row + 1, limit) {
-        for x in cmp::max(0, col - 1)..=cmp::min(col + 1, limit) {
-            if y != row || x != col {
+    for y in cmp::max(0, (row as i32)- 1)..=cmp::min((row + 1) as i32, limit) {
+        for x in cmp::max(0, (col as i32) - 1)..=cmp::min((col + 1) as i32, limit) {
+            if y != row as i32|| x != col as i32 {
                 neighbours.push((y as usize, x as usize));
             }
         }
@@ -73,7 +73,7 @@ fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
 fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: usize) {
     let mut rng = rand::thread_rng();
     let mut placed = 0;
-    let neighbours = get_neighbours(clicked_row as i32, clicked_col as i32);
+    let neighbours = get_neighbours(clicked_row, clicked_col);
 
     while placed < VIRUSES {
         let row = rng.gen_range(0..GRID_SIZE);
@@ -105,10 +105,10 @@ fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: us
 //    ... open it and call explode on all neighbours.
 //
 fn explode(field: &mut RefMut<Field>, row: usize, col: usize) {
-    let neighbours = get_neighbours(row as i32, col as i32);
+    let neighbours = get_neighbours(row, col);
     let infected_neighbours = neighbours
         .iter()
-        .filter(|&n| match field.cells[(n.0, n.1)] {
+        .filter(|&n| match field.cells[*n] {
             Cell::Hidden(true) => true,
             _ => false,
         })
