@@ -142,7 +142,7 @@ fn update_ui(field: &Field) {
                 Cell::Neighbours(n) => {
                     let widget = stack.get_child_by_name("label").unwrap();
                     let label = widget.downcast::<Label>().unwrap();
-                    if n > &0 {
+                    if *n > 0 {
                         label.set_markup(
                             &match n {
                                 1 => format!("<span foreground='blue'>{}</span>", n),
