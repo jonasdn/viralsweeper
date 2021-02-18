@@ -1,0 +1,17 @@
+[package]
+name = "viralsweeper"
+version = "0.1.0"
+authors = ["Jonas Danielsson <jonas@threetimestwo.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+glib = "^0"
+gio = "^0"
+array2d = "0.2.1"
+rand = "0.8"
+
+[dependencies.gtk]
+version = ""
+features = ["v3_16"]

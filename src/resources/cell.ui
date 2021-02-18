@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
+<interface>
+  <requires lib="gtk+" version="3.4"/>
+  <object class="GtkStack" id="cellStack">
+    <property name="transition-type">crossfade</property>
+    <child>
+      <object class="GtkButton" id="cellButton"/>
+      <packing>
+        <property name="name">button</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkLabel" id="cellLabel"/>
+      <packing>
+        <property name="name">label</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkImage" id="cellImage">
+        <property name="resource">/org/viralSweeper/virus.svg</property>
+        <property name="icon-size">1</property>
+      </object>
+      <packing>
+        <property name="name">virus</property>
+      </packing>
+    </child>
+  </object>
+</interface>
