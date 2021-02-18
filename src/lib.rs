@@ -2,7 +2,7 @@ extern crate gtk;
 
 use gtk::prelude::*;
 
-use std::cell::{RefCell, RefMut};
+use std::cell::{RefCell};
 use std::cmp;
 use std::rc::Rc;
 
@@ -70,7 +70,7 @@ fn get_neighbours(row: usize, col: usize) -> Vec<(usize, usize)> {
 // Place randomly, but not on first click coordinate or its neighbours, to give
 // a nicer start experience.
 //
-fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: usize) {
+fn insert_viruses(field: &mut Field, clicked_row: usize, clicked_col: usize) {
     let mut rng = rand::thread_rng();
     let mut placed = 0;
     let neighbours = get_neighbours(clicked_row, clicked_col);
@@ -104,7 +104,7 @@ fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: us
 //  ... else if cell has no viral neighbours ...
 //    ... open it and call explode on all neighbours.
 //
-fn explode(field: &mut RefMut<Field>, row: usize, col: usize) {
+fn explode(field: &mut Field, row: usize, col: usize) {
     let neighbours = get_neighbours(row, col);
     let infected_neighbours = neighbours
         .iter()
@@ -128,7 +128,7 @@ fn explode(field: &mut RefMut<Field>, row: usize, col: usize) {
 // Translate the Array2D<Cell> representation to Gtk UI.
 // The GtkStack is either a button, a label or a viral image.
 //
-fn update_ui(field: &RefMut<Field>) {
+fn update_ui(field: &Field) {
     let mut hidden = 0;
     for (row_idx, row) in field.cells.rows_iter().enumerate() {
         for (col_idx, cell) in row.enumerate() {
