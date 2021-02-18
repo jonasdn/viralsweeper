@@ -67,7 +67,8 @@ fn get_neighbours(row: i32, col: i32) -> Vec<(usize, usize)> {
 }
 
 //
-// Place randomly put not on first click coordinate.
+// Place randomly, but not on first click coordinate or its neighbours, to give
+// a nicer start experience.
 //
 fn insert_viruses(field: &mut RefMut<Field>, clicked_row: usize, clicked_col: usize) {
     let mut rng = rand::thread_rng();
