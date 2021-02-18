@@ -2,7 +2,7 @@ extern crate gtk;
 
 use gtk::prelude::*;
 
-use std::cell::{RefCell};
+use std::cell::RefCell;
 use std::cmp;
 use std::rc::Rc;
 
@@ -56,9 +56,9 @@ fn get_neighbours(row: usize, col: usize) -> Vec<(usize, usize)> {
     let mut neighbours = Vec::new();
     let limit: i32 = GRID_SIZE as i32 - 1;
 
-    for y in cmp::max(0, (row as i32)- 1)..=cmp::min((row + 1) as i32, limit) {
+    for y in cmp::max(0, (row as i32) - 1)..=cmp::min((row + 1) as i32, limit) {
         for x in cmp::max(0, (col as i32) - 1)..=cmp::min((col + 1) as i32, limit) {
-            if y != row as i32|| x != col as i32 {
+            if y != row as i32 || x != col as i32 {
                 neighbours.push((y as usize, x as usize));
             }
         }
