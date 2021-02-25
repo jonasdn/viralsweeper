@@ -177,17 +177,16 @@ fn update_ui(field: &Field) {
 // a virus. Each click triggers the algorihm in explode which works on
 // the Array2D in the fields variable. The UI is update from that model.
 //
-fn click(field_cell: Rc<RefCell<Field>>, row: usize, col: usize) {
-    let mut field = field_cell.borrow_mut();
+fn click(field: &mut Field, row: usize, col: usize) {
     field.clicks += 1;
 
     if field.clicks == 1 {
-        insert_viruses(&mut field, row, col);
+        insert_viruses(field, row, col);
     }
 
     match field.cells[(row, col)] {
         Cell::Hidden(true) => field.cells[(row, col)] = Cell::Infected,
-        Cell::Hidden(false) => explode(&mut field, row, col),
+        Cell::Hidden(false) => explode(field, row, col),
         _ => (),
     }
 
@@ -226,14 +225,13 @@ impl UI {
                 let stack: Stack = builder.get_object("cellStack").unwrap();
                 let button: Button = builder.get_object("cellButton").unwrap();
 
-                let clone = wrapper.clone();
-                clone
+                wrapper
                     .borrow()
                     .grid
                     .attach(&stack, col as i32, row as i32, 1, 1);
 
                 button.connect_clicked(glib::clone!(@strong wrapper => move |_b| {
-                    click(wrapper.clone(), row, col);
+                    click(&mut wrapper.borrow_mut(), row, col);
                 }));
             }
         }
