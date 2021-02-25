@@ -2,8 +2,9 @@ extern crate gtk;
 
 use gtk::prelude::*;
 
+use std::cell::RefCell;
 use std::cmp;
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
 use array2d::Array2D;
 use gtk::{
@@ -216,27 +217,22 @@ impl UI {
             clicks: 0,
         };
 
-        //
-        // Since this field needs to be owned by a lot of different callbacks
-        // we will guard it by atomic reference counting. And since it needs to
-        // be mutable, we will guard the field with a mutex.
-        //
-        let mutex = Arc::new(Mutex::new(field));
+        let wrapper: Rc<RefCell<Field>> = Rc::new(RefCell::new(field));
+
         for row in 0..GRID_SIZE {
             for col in 0..GRID_SIZE {
                 let builder = Builder::from_resource("/org/viralSweeper/cell.ui");
                 let stack: Stack = builder.get_object("cellStack").unwrap();
                 let button: Button = builder.get_object("cellButton").unwrap();
 
-                let clone = mutex.clone();
-                clone
-                    .lock()
-                    .unwrap()
+                wrapper
+                    .borrow()
                     .grid
                     .attach(&stack, col as i32, row as i32, 1, 1);
-                button.connect_clicked(move |_| {
-                    click(&mut clone.lock().unwrap(), row, col);
-                });
+
+                button.connect_clicked(glib::clone!(@strong wrapper => move |_b| {
+                    click(&mut wrapper.borrow_mut(), row, col);
+                }));
             }
         }
         UI { window }
