@@ -17,7 +17,7 @@ use rand::Rng;
 pub const GRID_SIZE: usize = 16;
 pub const VIRUSES: usize = 30;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Cell {
     Hidden(bool),
     Infected,
@@ -130,6 +130,8 @@ fn explode(field: &mut Field, row: usize, col: usize) {
 //
 fn update_ui(field: &Field) {
     let mut hidden = 0;
+    let infected = field.cells.elements_row_major_iter().any(|cell| *cell == Cell::Infected);
+
     for (row_idx, row) in field.cells.rows_iter().enumerate() {
         for (col_idx, cell) in row.enumerate() {
             let widget = field
@@ -163,7 +165,13 @@ fn update_ui(field: &Field) {
                     stack.set_visible_child_name("virus");
                     end_dialog!("You have been infected!", "darkgreen");
                 }
-                Cell::Hidden(_) => hidden += 1,
+                Cell::Hidden(t) => {
+                    hidden += 1;
+                    if *t == true && infected == true {
+                        // Show all virus locations when infected
+                        stack.set_visible_child_name("virus");
+                    }
+                },
             }
         }
     }
